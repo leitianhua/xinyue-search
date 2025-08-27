@@ -8,13 +8,13 @@
         <el-form-item>
             <el-button icon="el-icon-plus" size="small" @click="clickAdd" plain>添加</el-button>
             <el-button icon="el-icon-paperclip" size="small"
-                @click="window.open('/api/other/web_search?title=仙逆&is_show=1', '_blank')" plain>夸克测试前台数据</el-button>
+                       @click="window.open('/api/other/web_search?title=仙逆&is_show=1', '_blank')" plain>夸克测试前台数据</el-button>
             <el-button icon="el-icon-paperclip" size="small"
-                @click="window.open('/api/other/web_search?title=仙逆&is_show=1&is_type=2', '_blank')"
-                plain>百度测试前台数据</el-button>
+                       @click="window.open('/api/other/web_search?title=仙逆&is_show=1&is_type=2', '_blank')"
+                       plain>百度测试前台数据</el-button>
             <el-button icon="el-icon-paperclip" size="small"
-                @click="window.open('/api/other/web_search?title=仙逆&is_show=1&is_type=3', '_blank')"
-                plain>UC测试前台数据</el-button>
+                       @click="window.open('/api/other/web_search?title=仙逆&is_show=1&is_type=3', '_blank')"
+                       plain>UC测试前台数据</el-button>
         </el-form-item>
     </el-form>
     <el-table :data="dataList" v-loading="loading">
@@ -348,10 +348,26 @@
                     },
                     rules: {
                         name: [{ required: true, message: '请输入分类名称', trigger: 'blur' }],
+                        headers: [{ validator: this.validateJson, trigger: 'blur' }],
+                        fixed_params: [{ validator: this.validateJson, trigger: 'blur' }],
+                        field_map: [{ validator: this.validateJson, trigger: 'blur' }],
                     },
                 }
             },
             methods: {
+                validateJson(rule, value, callback) {
+                    if (!value || value.trim() === '') {
+                        callback(); // 空值不校验，允许为空
+                        return;
+                    }
+
+                    try {
+                        JSON.parse(value);
+                        callback(); // JSON格式正确
+                    } catch (e) {
+                        callback(new Error('请输入有效的JSON格式'));
+                    }
+                },
                 postEdit() {
                     var that = this;
                     that.$refs["formEdit"].validate((valid) => {
