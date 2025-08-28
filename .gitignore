@@ -5,3 +5,4 @@ nginx.htaccess
 .env
 /public/install/install.lock
 /extend/netdisk/pan/access_token.json
+.idea/
