@@ -49,7 +49,14 @@ class Open extends QfShop
             $SourceModel = new SourceModel();
             $SourceModel->insertGetId($data);
         }
-        return jok("获取成功",$res['data']);
+        
+        // 添加解析出的提取码信息到返回结果中
+        $responseData = $res['data'];
+        if (!empty($urlData['code'])) {
+            $responseData['parsed_code'] = $urlData['code'];
+        }
+        
+        return jok("获取成功", $responseData);
     }
 
 }

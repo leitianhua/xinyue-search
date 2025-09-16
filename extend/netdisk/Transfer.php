@@ -51,6 +51,22 @@ class Transfer
             'stoken' => $urlData['stoken'] ?? '',
         ];
 
+        // 如果URL中包含提取码，自动解析提取码
+        if (strpos($url, '?pwd=') !== false) {
+            $parsedUrl = parse_url($url);
+            if (isset($parsedUrl['query'])) {
+                parse_str($parsedUrl['query'], $query);
+                if (isset($query['pwd']) && !empty($query['pwd'])) {
+                    $config['code'] = $query['pwd'];
+                    // 移除URL中的提取码部分
+                    $url = $parsedUrl['scheme'] . '://' . $parsedUrl['host'] . $parsedUrl['path'];
+                    if (isset($parsedUrl['fragment'])) {
+                        $url .= '#' . $parsedUrl['fragment'];
+                    }
+                }
+            }
+        }
+
         if (strpos($url, '?entry=') !== false) {
             $entry = preg_match('/\?entry=([^&]+)/', $url, $matches) ? $matches[1] : '';
             $url = preg_match('/.*(?=\?entry=)/', $url, $matches) ? $matches[0] : '';
@@ -59,6 +75,11 @@ class Transfer
         $substring = strstr($url, 's/');
         if ($substring !== false) {
             $pwd_id = substr($substring, 2); // 去除 's/' 部分
+            // 移除问号及后面的参数
+            $questionMarkPos = strpos($pwd_id, '?');
+            if ($questionMarkPos !== false) {
+                $pwd_id = substr($pwd_id, 0, $questionMarkPos);
+            }
         } else {
             return jerr2("资源地址格式有误");
         }
